@@ -1,0 +1,26 @@
+[server]
+host = 0.0.0.0
+port = 5000
+
+[api]
+gold_api_url = 
+gold_api_key = 
+fund_api_url = 
+
+[gold]
+enable_monitor = true
+price_threshold_gold = 2800
+price_threshold_silver = 32
+alert_cooldown_minutes = 60
+update_interval = 60
+
+[fund]
+enable_monitor = true
+change_percent_threshold = 5
+update_interval = 3600
+
+[email]
+smtp_server = smtp.qq.com
+smtp_port = 465
+sender_email = your_email@qq.com
+sender_password = your_auth_code

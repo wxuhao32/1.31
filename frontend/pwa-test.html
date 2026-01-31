@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA 测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .test-item .label {
+            font-weight: 500;
+            color: #333;
+        }
+        .test-item .status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+        }
+        .status-dot.success {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+        .status-dot.error {
+            background: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+        }
+        .status-dot.warning {
+            background: #f59e0b;
+            box-shadow: 0 0 10px #f59e0b;
+        }
+        .status-text {
+            font-size: 14px;
+            color: #666;
+        }
+        .button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        .button:hover {
+            transform: scale(1.02);
+        }
+        .info {
+            background: #e0e7ff;
+            border-left: 4px solid #4f46e5;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #3730a3;
+        }
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 PWA 状态检测</h1>
+        
+        <div class="test-item">
+            <span class="label">HTTPS 连接</span>
+            <div class="status">
+                <div class="status-dot" id="https-status"></div>
+                <span class="status-text" id="https-text">检测中...</span>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <span class="label">Service Worker 支持</span>
+            <div class="status">
+                <div class="status-dot" id="sw-support-status"></div>
+                <span class="status-text" id="sw-support-text">检测中...</span>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <span class="label">Service Worker 注册</span>
+            <div class="status">
+                <div class="status-dot" id="sw-register-status"></div>
+                <span class="status-text" id="sw-register-text">检测中...</span>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <span class="label">Manifest 加载</span>
+            <div class="status">
+                <div class="status-dot" id="manifest-status"></div>
+                <span class="status-text" id="manifest-text">检测中...</span>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <span class="label">缓存存储</span>
+            <div class="status">
+                <div class="status-dot" id="cache-status"></div>
+                <span class="status-text" id="cache-text">检测中...</span>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <span class="label">可安装性</span>
+            <div class="status">
+                <div class="status-dot" id="installable-status"></div>
+                <span class="status-text" id="installable-text">检测中...</span>
+            </div>
+        </div>
+        
+        <button class="button" onclick="runAllTests()">🔄 重新检测</button>
+        
+        <div class="info" id="install-prompt" style="display: none;">
+            <strong>📥 可以安装此应用！</strong>
+            <button onclick="installApp()" style="margin-top: 10px; padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer;">立即安装</button>
+        </div>
+        
+        <div class="info">
+            <strong>💡 提示</strong>
+            <p>所有项目都显示绿色说明 PWA 配置完成。安装应用后，可以离线使用。</p>
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+
+        function updateStatus(id, textId, status, text) {
+            const dot = document.getElementById(id);
+            const textEl = document.getElementById(textId);
+            
+            dot.className = 'status-dot ' + status;
+            textEl.textContent = text;
+        }
+
+        function testHTTPS() {
+            const isHTTPS = window.location.protocol === 'https:';
+            updateStatus(
+                'https-status', 
+                'https-text', 
+                isHTTPS ? 'success' : 'warning',
+                isHTTPS ? '已连接' : '未加密'
+            );
+        }
+
+        function testServiceWorkerSupport() {
+            const supported = 'serviceWorker' in navigator;
+            updateStatus(
+                'sw-support-status',
+                'sw-support-text',
+                supported ? 'success' : 'error',
+                supported ? '支持' : '不支持'
+            );
+        }
+
+        function testServiceWorkerRegistration() {
+            if (!('serviceWorker' in navigator)) {
+                updateStatus('sw-register-status', 'sw-register-text', 'error', '不支持');
+                return;
+            }
+            
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                if (registrations.length > 0) {
+                    updateStatus('sw-register-status', 'sw-register-text', 'success', '已注册');
+                } else {
+                    updateStatus('sw-register-status', 'sw-register-text', 'warning', '未注册');
+                }
+            });
+        }
+
+        function testManifest() {
+            const link = document.querySelector('link[rel="manifest"]');
+            if (link) {
+                fetch(link.href).then(response => {
+                    if (response.ok) {
+                        updateStatus('manifest-status', 'manifest-text', 'success', '已加载');
+                    } else {
+                        updateStatus('manifest-status', 'manifest-text', 'error', '加载失败');
+                    }
+                }).catch(() => {
+                    updateStatus('manifest-status', 'manifest-text', 'error', '加载失败');
+                });
+            } else {
+                updateStatus('manifest-status', 'manifest-text', 'error', '未找到');
+            }
+        }
+
+        function testCache() {
+            if ('caches' in window) {
+                caches.keys().then(keys => {
+                    if (keys.length > 0) {
+                        updateStatus('cache-status', 'cache-text', 'success', `${keys.length} 个缓存`);
+                    } else {
+                        updateStatus('cache-status', 'cache-text', 'warning', '无缓存');
+                    }
+                });
+            } else {
+                updateStatus('cache-status', 'cache-text', 'error', '不支持');
+            }
+        }
+
+        function testInstallable() {
+            if (deferredPrompt) {
+                updateStatus('installable-status', 'installable-text', 'success', '可安装');
+                document.getElementById('install-prompt').style.display = 'block';
+            } else {
+                updateStatus('installable-status', 'installable-text', 'warning', '需手动触发');
+            }
+        }
+
+        function runAllTests() {
+            testHTTPS();
+            testServiceWorkerSupport();
+            testServiceWorkerRegistration();
+            testManifest();
+            testCache();
+            testInstallable();
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            testInstallable();
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(choiceResult => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('用户接受了安装提示');
+                    }
+                    deferredPrompt = null;
+                    runAllTests();
+                });
+            }
+        }
+
+        window.addEventListener('load', () => {
+            runAllTests();
+        });
+    </script>
+</body>
+</html>

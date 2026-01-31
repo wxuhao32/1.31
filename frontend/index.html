@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="金融监控">
+    <meta name="description" content="金融价格实时监控与预警系统">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon-16.png">
+    <link rel="shortcut icon" href="assets/icons/icon-192.png">
+    <title>金融价格监控</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="app">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">📊</span>
+                    <h1 class="logo-text">金融价格监控</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon refresh-btn" id="refreshBtn" title="刷新">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                        </svg>
+                    </button>
+                    <button class="btn-icon menu-btn" id="menuBtn" title="菜单">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-dot online" id="connectionStatus"></span>
+                <span id="connectionText">已连接</span>
+            </div>
+            <div class="status-item exchange-rate-item" id="exchangeRateItem" style="display: none;">
+                <span class="status-icon">💱</span>
+                <span id="exchangeRateText">USD/CNY: 7.20</span>
+            </div>
+            <div class="status-item">
+                <span class="status-icon">🔄</span>
+                <span id="lastUpdate">正在加载...</span>
+            </div>
+        </div>
+
+        <!-- 主要内容区 -->
+        <main class="main-content">
+            <!-- 贵金属价格卡片 -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">贵金属价格</h2>
+                    <span class="section-badge">实时</span>
+                </div>
+                <div class="cards-container" id="preciousMetalsCards">
+                    <!-- 黄金卡片 -->
+                    <div class="card gold-card" id="goldCard">
+                        <div class="card-header">
+                            <div class="card-icon">🥇</div>
+                            <div class="card-title">
+                                <h3 id="goldName">纽约黄金</h3>
+                                <span class="card-subtitle">国际金价</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="price-row">
+                                <div class="price-item">
+                                    <span class="price-label">美元/盎司</span>
+                                    <span class="price-value" id="goldPriceUSD">---</span>
+                                </div>
+                                <div class="price-item highlight">
+                                    <span class="price-label">人民币/克</span>
+                                    <span class="price-value" id="goldPriceCNY">---</span>
+                                </div>
+                            </div>
+                            <div class="stats-row">
+                                <div class="stat-item">
+                                    <span class="stat-label">实时</span>
+                                    <span class="stat-value" id="goldOpen">---</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">最低</span>
+                                    <span class="stat-value" id="goldHigh">---</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">最高</span>
+                                    <span class="stat-value" id="goldLow">---</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="change-indicator" id="goldChange">
+                                <span class="change-value">---</span>
+                                <span class="change-label">涨跌幅</span>
+                            </div>
+                            <div class="update-time" id="goldUpdateTime">---</div>
+                        </div>
+                    </div>
+
+                    <!-- 白银卡片 -->
+                    <div class="card silver-card" id="silverCard">
+                        <div class="card-header">
+                            <div class="card-icon">🥈</div>
+                            <div class="card-title">
+                                <h3 id="silverName">纽约白银</h3>
+                                <span class="card-subtitle">国际银价</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="price-row">
+                                <div class="price-item">
+                                    <span class="price-label">美元/盎司</span>
+                                    <span class="price-value" id="silverPriceUSD">---</span>
+                                </div>
+                                <div class="price-item highlight">
+                                    <span class="price-label">人民币/克</span>
+                                    <span class="price-value" id="silverPriceCNY">---</span>
+                                </div>
+                            </div>
+                            <div class="stats-row">
+                                <div class="stat-item">
+                                    <span class="stat-label">实时</span>
+                                    <span class="stat-value" id="silverOpen">---</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">最低</span>
+                                    <span class="stat-value" id="silverHigh">---</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">最高</span>
+                                    <span class="stat-value" id="silverLow">---</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="change-indicator" id="silverChange">
+                                <span class="change-value">---</span>
+                                <span class="change-label">涨跌幅</span>
+                            </div>
+                            <div class="update-time" id="silverUpdateTime">---</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 基金列表 -->
+            <section class="section">
+                <div class="section-header">
+                    <h2 class="section-title">基金监控</h2>
+                    <div class="section-actions">
+                        <div class="search-box">
+                            <input type="text" id="fundSearch" placeholder="搜索基金代码或名称...">
+                            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 基金列表容器 -->
+                <div class="fund-list" id="fundList">
+                    <div class="loading-state" id="fundLoading">
+                        <div class="loading-spinner"></div>
+                        <p>正在加载基金数据...</p>
+                    </div>
+                </div>
+
+                <!-- 分页控件 -->
+                <div class="pagination" id="fundPagination" style="display: none;">
+                    <button class="pagination-btn" id="prevPage" disabled>上一页</button>
+                    <span class="pagination-info" id="paginationInfo">1 / 1</span>
+                    <button class="pagination-btn" id="nextPage">下一页</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部导航（移动端） -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-tab="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">首页</span>
+            </button>
+            <button class="nav-item" data-tab="funds">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">基金</span>
+            </button>
+            <button class="nav-item" data-tab="alert">
+                <span class="nav-icon">🔔</span>
+                <span class="nav-label">价格预警</span>
+            </button>
+            <button class="nav-item" data-tab="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">设置</span>
+            </button>
+        </nav>
+
+        <!-- 侧边栏菜单 -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>菜单</h3>
+                <button class="btn-icon close-sidebar" id="closeSidebar">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="sidebar-content">
+                <ul class="sidebar-menu">
+                    <li>
+                        <a href="#" class="sidebar-link">
+                            <span class="sidebar-icon">📈</span>
+                            <span>价格走势</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link" id="sidebarAlertLink">
+                            <span class="sidebar-icon">🔔</span>
+                            <span>价格预警</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link">
+                            <span class="sidebar-icon">📊</span>
+                            <span>历史数据</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-link">
+                            <span class="sidebar-icon">ℹ️</span>
+                            <span>关于系统</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 设置面板 -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <h3>系统设置</h3>
+                <button class="btn-icon close-settings" id="closeSettings">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="settings-content">
+                <div class="settings-group">
+                    <h4>显示设置</h4>
+                    <div class="setting-item">
+                        <label class="setting-label">自动刷新</label>
+                        <label class="switch">
+                            <input type="checkbox" id="autoRefresh" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label class="setting-label">刷新间隔（秒）</label>
+                        <select id="refreshInterval" class="select-input">
+                            <option value="3">3秒</option>
+                            <option value="5">5秒</option>
+                            <option value="10">10秒</option>
+                            <option value="30">30秒</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h4>主题设置</h4>
+                    <div class="setting-item">
+                        <label class="setting-label">深色模式</label>
+                        <label class="switch">
+                            <input type="checkbox" id="darkMode" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h4>添加基金</h4>
+                    <div class="add-fund-form">
+                        <input type="text" id="newFundCode" class="text-input" placeholder="输入基金代码（如：004815）">
+                        <button class="btn-primary" id="addFundBtn">添加</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 价格预警面板遮罩 -->
+        <div class="alert-overlay" id="alertOverlay"></div>
+
+        <!-- 价格预警面板 -->
+        <div class="alert-panel" id="alertPanel">
+            <div class="alert-header">
+                <h3>价格预警设置</h3>
+                <button class="btn-icon close-alert" id="closeAlert">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="alert-content">
+                <!-- 预警开关 -->
+                <div class="alert-section">
+                    <div class="alert-section-header">
+                        <h4>预警开关</h4>
+                        <span class="section-badge">控制</span>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-item-info">
+                            <span class="alert-item-label">启用黄金价格预警</span>
+                            <span class="alert-item-desc">当黄金价格低于设定阈值时发送邮件</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="enableGoldAlert">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-item-info">
+                            <span class="alert-item-label">启用白银价格预警</span>
+                            <span class="alert-item-desc">当白银价格低于设定阈值时发送邮件</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="enableSilverAlert">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-item-info">
+                            <span class="alert-item-label">启用基金涨跌预警</span>
+                            <span class="alert-item-desc">当基金涨跌幅超过设定阈值时发送邮件</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="enableFundAlert">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 阈值设置 -->
+                <div class="alert-section">
+                    <div class="alert-section-header">
+                        <h4>阈值设置</h4>
+                        <span class="section-badge">触发条件</span>
+                    </div>
+                    <div class="alert-threshold-grid">
+                        <div class="alert-threshold-item">
+                            <label class="alert-threshold-label">
+                                <span class="threshold-icon">🥇</span>
+                                黄金价格阈值
+                            </label>
+                            <div class="alert-threshold-input">
+                                <input type="number" id="goldThreshold" class="number-input" step="0.01" min="0" placeholder="如：500">
+                                <span class="input-unit">元/克</span>
+                            </div>
+                        </div>
+                        <div class="alert-threshold-item">
+                            <label class="alert-threshold-label">
+                                <span class="threshold-icon">🥈</span>
+                                白银价格阈值
+                            </label>
+                            <div class="alert-threshold-input">
+                                <input type="number" id="silverThreshold" class="number-input" step="0.01" min="0" placeholder="如：6">
+                                <span class="input-unit">元/克</span>
+                            </div>
+                        </div>
+                        <div class="alert-threshold-item">
+                            <label class="alert-threshold-label">
+                                <span class="threshold-icon">📊</span>
+                                基金涨跌阈值
+                            </label>
+                            <div class="alert-threshold-input">
+                                <input type="number" id="fundThreshold" class="number-input" step="0.1" min="0" placeholder="如：5">
+                                <span class="input-unit">%</span>
+                            </div>
+                        </div>
+                        <div class="alert-threshold-item">
+                            <label class="alert-threshold-label">
+                                <span class="threshold-icon">⏱️</span>
+                                预警冷却时间
+                            </label>
+                            <div class="alert-threshold-input">
+                                <input type="number" id="alertCooldown" class="number-input" step="1" min="1" max="1440" placeholder="如：30">
+                                <span class="input-unit">分钟</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary btn-block" id="saveAlertConfig">保存配置</button>
+                </div>
+
+                <!-- 邮箱设置 -->
+                <div class="alert-section">
+                    <div class="alert-section-header">
+                        <h4>邮件接收设置</h4>
+                        <span class="section-badge">通知</span>
+                    </div>
+                    <div class="email-add-form">
+                        <input type="email" id="newEmail" class="text-input" placeholder="输入邮箱地址">
+                        <button class="btn-primary" id="addEmailBtn">添加</button>
+                    </div>
+                    <div class="email-list" id="emailList">
+                        <div class="email-list-empty">暂无邮箱地址</div>
+                    </div>
+                    <div class="email-test-section">
+                        <button class="btn-secondary btn-block" id="testEmailBtn">发送测试邮件</button>
+                    </div>
+                </div>
+
+                <!-- 预警历史 -->
+                <div class="alert-section">
+                    <div class="alert-section-header">
+                        <h4>预警历史</h4>
+                        <select id="historyFilter" class="select-input small">
+                            <option value="1">最近1小时</option>
+                            <option value="6">最近6小时</option>
+                            <option value="24" selected>最近24小时</option>
+                            <option value="72">最近3天</option>
+                        </select>
+                    </div>
+                    <div class="alert-history-list" id="alertHistory">
+                        <div class="alert-history-empty">暂无预警记录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast通知 -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Loading遮罩 -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner large"></div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

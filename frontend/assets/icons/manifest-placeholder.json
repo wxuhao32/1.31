@@ -1,0 +1,67 @@
+{
+    "name": "金融价格监控",
+    "short_name": "金融监控",
+    "description": "实时监控贵金属和基金价格，支持价格预警功能",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "display_override": ["standalone", "fullscreen"],
+    "background_color": "#0f172a",
+    "theme_color": "#4f46e5",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "https://via.placeholder.com/72/4f46e5/ffffff?text=📊",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/96/4f46e5/ffffff?text=📊",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/128/4f46e5/ffffff?text=📊",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/144/4f46e5/ffffff?text=📊",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/152/4f46e5/ffffff?text=📊",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/192/4f46e5/ffffff?text=📊",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/384/4f46e5/ffffff?text=📊",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/512/4f46e5/ffffff?text=📊",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    "categories": ["finance", "utilities"],
+    "lang": "zh-CN",
+    "dir": "ltr",
+    "prefer_related_applications": false,
+    "screenshots": []
+}

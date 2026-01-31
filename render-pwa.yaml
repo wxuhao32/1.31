@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: financial-monitor-api
+    region: singapore
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --workers 4 --threads 8 --bind 0.0.0.0:$PORT --timeout 120 --access-logfile - --error-logfile - api_server:app
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: PORT
+        fromService:
+          name: financial-monitor-api
+          property: port
+    healthCheckPath: /api/health
+    # PWA 相关配置
+    headers:
+      - path: /sw.js
+        name: Service-Worker-Allowed
+        value: /
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+      - path: /manifest.json
+        name: Cache-Control
+        value: public, max-age=86400
